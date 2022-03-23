@@ -4,6 +4,8 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 
 
@@ -30,13 +32,15 @@ time.sleep(5)
 
 
 response = requests.get(driver.current_url)
+response.execute_script('return document.readyState').equals('complete')
 hy_vee_data = response.text
-soup = BeautifulSoup(hy_vee_data, 'html.parser')
-print(soup)
 
+print(hy_vee_data)
+# soup = BeautifulSoup(hy_vee_data, 'html.parser')
+# for selection in soup.select('#main > div > div:nth-child(2) > div:nth-child(2) > '
+#                            'div:nth-child(2) > div:nth-child(2) > div > article > div > div:nth-child(2)'):
+#     print(selection)
 
-
-# hy_vee = soup.select('article.div.a.div.div.p')
 
 
 # Label Sprouts and Hy-Vee, if in Sprouts column, detect images from Sprouts store only. If in Hy-vee, detect images
