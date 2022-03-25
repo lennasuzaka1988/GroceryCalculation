@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
 from selenium.webdriver.support.select import Select
 import time
@@ -24,15 +25,17 @@ import time
 #     return bill_with_dollar_sign
 
 
-driver = webdriver.Chrome()
-driver.get('https://www.sprouts.com/')
-time.sleep(5)
-search_box = driver.execute_script("document.querySelector('#menu-item-2623 > div').shadowRoot")
-print(search_box)
-# search_box.find_element(By.CSS_SELECTOR('div[aria-label="Search"]'))
-# search_click.click()
-    # \.send_keys('Ritz' + Keys.ENTER)
+options = webdriver.ChromeOptions()
+options.add_argument('start-maximized')
+options.add_experimental_option('excludeSwitches', ['enable-automation'])
+options.add_argument('--enable-javascript')
+options.add_experimental_option('detach', True)
+driver = webdriver.Chrome(options=options)
 
+wait = WebDriverWait(driver, 10)
+
+driver.get('https://www.sprouts.com/')
+driver.find_element(By.XPATH, "//ul[@id='ubermenu-nav-main-4-top-bar-r']//div[@role='button']").click()
 
 
 
