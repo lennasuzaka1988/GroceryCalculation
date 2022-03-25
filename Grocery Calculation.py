@@ -1,11 +1,10 @@
 import pandas as pd
 from bs4 import BeautifulSoup
-import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import requests
 from selenium.webdriver.support.select import Select
 import time
 
@@ -26,20 +25,15 @@ import time
 
 
 driver = webdriver.Chrome()
-driver.get('https://www.hy-vee.com/aisles-online')
-driver.find_element(By.XPATH, '//*[@id="__next"]/div[2]/div/div/header/div[2]/div[2]/div/div[1]/div/form/div/input')\
-    .send_keys('Ritz' + Keys.ENTER)
+driver.get('https://www.sprouts.com/')
 time.sleep(5)
-
-response = requests.get(driver.current_url)
-hy_vee_data = response.content
-hy_vee_site = open('hyveeSite', 'w')
-
-for line in hy_vee_data:
-    hy_vee_site.write(str(line))
-
-hy_vee_site.close()
+search_box = driver.execute_script("document.querySelector('#menu-item-2623 > div').shadowRoot")
+print(search_box)
+# search_box.find_element(By.CSS_SELECTOR('div[aria-label="Search"]'))
+# search_click.click()
+    # \.send_keys('Ritz' + Keys.ENTER)
 
 
-# Label Sprouts and Hy-Vee, if in Sprouts column, detect images from Sprouts store only. If in Hy-vee, detect images
-# from Hy-Vee only
+
+
+# Label Sprouts, if in Sprouts column, detect images from Sprouts store only
