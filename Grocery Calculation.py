@@ -30,33 +30,41 @@ import time
 options = webdriver.ChromeOptions()
 options.add_argument('start-maximized')
 options.add_experimental_option('excludeSwitches', ['enable-automation'])
+options.add_argument('--disable-popup-blocking')
 options.add_argument('--enable-javascript')
+options.add_argument('--disable-notifications')
 options.add_experimental_option('detach', True)
 driver = webdriver.Chrome(options=options)
 
 
-# Heading to OG page and inputting search
-driver.get('https://www.sprouts.com/')
-time.sleep(3)
-driver.find_element(By.XPATH, '//ul[@id="ubermenu-nav-main-4-top-bar-r"]//div[@role="button"]').click()
-driver.find_element(By.XPATH, "//div[@id='secondary-navigation']/div[@role='navigation']/ul[@class='ubermenu-nav']/li[3]//input[@name='nav-search']").send_keys('corn' + Keys.ENTER)
-current_page = driver.current_url
+# Heading to OG page
+driver.get('https://www.sprouts.com/store/mo/kansas-city/kansas-city/')
 
+# Waiting for that damn popup
 
-# Automation for the search results page
-driver.get(current_page)
-time.sleep(5)
-driver.find_element(By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]').click()
+# Swapping stores
+driver.find_element(By.XPATH, '//*[@id="post-1215"]/div/div/div[2]/div[2]/div[1]/button').click()
 
-
-# Initializing Beautiful Soup and requesting the page
-time.sleep(5)
-html = driver.page_source
-soup = BeautifulSoup(html, 'html5lib')
-soup.prettify()
-price = soup.select('li:nth-of-type(6)> div > div:nth-of-type(4)> div:nth-of-type(3) > div > div > react-product-price > div > div:nth-of-type(2) > span > span:nth-of-type(1)')
-for i in price:
-    print(i.text)
+# time.sleep(3)
+# driver.find_element(By.XPATH, '//ul[@id="ubermenu-nav-main-4-top-bar-r"]//div[@role="button"]').click()
+# driver.find_element(By.XPATH, "//div[@id='secondary-navigation']/div[@role='navigation']/ul[@class='ubermenu-nav']/li[3]//input[@name='nav-search']").send_keys('corn' + Keys.ENTER)
+# current_page = driver.current_url
+#
+#
+# # Automation for the search results page
+# driver.get(current_page)
+# time.sleep(8)
+# driver.find_element(By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]').click()
+#
+#
+# # Initializing Beautiful Soup and requesting the page
+# time.sleep(5)
+# html = driver.page_source
+# soup = BeautifulSoup(html, 'html5lib')
+# soup.prettify()
+# price = soup.select('li:nth-of-type(6)> div > div:nth-of-type(4)> div:nth-of-type(3) > div > div > react-product-price > div > div:nth-of-type(2) > span > span:nth-of-type(1)')
+# for i in price:
+#     print(i.text)
 
 
 # MAJOR NOTE: SOMETIMES COUPON ALERT POPS ON FRONT PAGE, FIND A WAY TO CLICK "MAYBE LATER" ON CONDITIONS
