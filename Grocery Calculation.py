@@ -15,6 +15,13 @@ def grocery_prices():
     return bill_with_dollar_sign
 
 
+for row in df['Item']:
+    if row.value == 'nan':
+        print('no')
+    else:
+        print(row)
+
+
 # If in Sprouts column, detect images from Sprouts store only
 # Work on adding checkboxes to sheet
 # Work on separating these features
