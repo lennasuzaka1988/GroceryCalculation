@@ -1,9 +1,11 @@
 import pandas as pd
+# from grocery_scraper import *
 
 try:
-    grocery_list = pd.read_excel('G:/Sync/Shared Folder/Groceries and Takeout/Grocery List2.xlsx')
+    # grocery_list = pd.read_excel('G:/Sync/Shared Folder/Groceries and Takeout/Grocery List.xlsx')
+    grocery_list = pd.read_excel('Grocery List.xlsx')
 except FileNotFoundError:
-    grocery_list = pd.read_excel('D:/Sync/Shared Folder/Groceries and Takeout/Grocery List2.xlsx')
+    grocery_list = pd.read_excel('D:/Sync/Shared Folder/Groceries and Takeout/Grocery List.xlsx')
 df = pd.DataFrame(grocery_list)
 
 
@@ -15,11 +17,19 @@ def grocery_prices():
     return bill_with_dollar_sign
 
 
-for row in df['Item']:
-    if row.value == 'nan':
-        print('no')
-    else:
-        print(row)
+
+# Searching for first product
+df.iat[1, 1]
+# store_navigation()
+for row in df['Item'].dropna()[1:]:
+    print(row)
+
+    #     first_search(row)
+    #     print(scraping_price())
+    # else:
+    #     subsequent_search(row)
+    #     print(scraping_price())
+
 
 
 # If in Sprouts column, detect images from Sprouts store only

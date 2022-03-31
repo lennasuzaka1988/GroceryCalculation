@@ -32,16 +32,26 @@ def store_navigation():
     driver.find_element(By.CSS_SELECTOR, '.cell.divider.small-6 > button').click()
 
 
-def search():
+# Only for the first product since paths and JavaScript changes a little after
+def first_search(product):
     time.sleep(3)
     driver.find_element(By.XPATH,
-                          '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input').send_keys('corn' +
+                          '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input').send_keys(product +
                                                                                                      Keys.ENTER)
     current_page = driver.current_url
     # Automation for the search results page
     driver.get(current_page)
     time.sleep(8)
     driver.find_element(By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]').click()
+
+
+def subsequent_search(product):
+    time.sleep(3)
+    driver.find_element(By.XPATH,
+                          '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input').send_keys(product +
+                                                                                                       Keys.ENTER)
+    current_page = driver.current_url
+    driver.get(current_page)
 
 
 # Initializing Beautiful Soup and scraping for the price
@@ -53,11 +63,6 @@ def scraping_price():
     price = soup.select(
         '#content > div > div.shop-layout > div.content-wrapper > div > div:nth-child(2) > ol > '
         'li:nth-child(1) > div > div.cell-content-wrapper > div.cell-prices.product-prices > '
-        'div > div > react-product-price > div > div.css-0 > span:nth-child(1) > span:nth-child(1)')
+        'div > div > react-product-price > div > div.css-0 > span:nth-child(2) > span:nth-child(1)')
     for i in price:
         return i.text
-
-
-store_navigation()
-search()
-print(scraping_price())
