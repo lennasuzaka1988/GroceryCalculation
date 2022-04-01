@@ -6,7 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-
 # Initializing the webdriver
 options = webdriver.ChromeOptions()
 options.add_argument('start-maximized')
@@ -36,20 +35,21 @@ def store_navigation():
 def first_search(product):
     time.sleep(3)
     driver.find_element(By.XPATH,
-                          '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input').send_keys(product +
-                                                                                                     Keys.ENTER)
+                        '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input').send_keys(product +
+                                                                                                   Keys.ENTER)
     current_page = driver.current_url
     # Automation for the search results page
     driver.get(current_page)
     time.sleep(8)
     driver.find_element(By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]').click()
-
+    driver.find_element(By.CSS_SELECTOR,
+                        'sticky-react-header > div > div.css-q1n3l > div.css-c1jgn7 > form > div > input').clear()
 
 def subsequent_search(product):
     time.sleep(3)
     driver.find_element(By.XPATH,
-                          '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input').send_keys(product +
-                                                                                                       Keys.ENTER)
+                        '//input[@class="css-4hd4ug active focus-visible"]').send_keys(product +
+                                                                                       Keys.ENTER)
     current_page = driver.current_url
     driver.get(current_page)
 

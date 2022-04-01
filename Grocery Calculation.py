@@ -1,9 +1,8 @@
 import pandas as pd
-# from grocery_scraper import *
+from grocery_scraper import *
 
 try:
-    # grocery_list = pd.read_excel('G:/Sync/Shared Folder/Groceries and Takeout/Grocery List.xlsx')
-    grocery_list = pd.read_excel('Grocery List.xlsx')
+    grocery_list = pd.read_excel('G:/Sync/Shared Folder/Groceries and Takeout/Grocery List.xlsx')
 except FileNotFoundError:
     grocery_list = pd.read_excel('D:/Sync/Shared Folder/Groceries and Takeout/Grocery List.xlsx')
 df = pd.DataFrame(grocery_list)
@@ -17,18 +16,19 @@ def grocery_prices():
     return bill_with_dollar_sign
 
 
-
 # Searching for first product
-df.iat[1, 1]
-# store_navigation()
-for row in df['Item'].dropna()[1:]:
-    print(row)
+def first_product_search():
+    first_product = df.iat[1, 1]
+    first_search(first_product)
+    return scraping_price()
 
-    #     first_search(row)
-    #     print(scraping_price())
-    # else:
-    #     subsequent_search(row)
-    #     print(scraping_price())
+
+# Navigating to the store location's search page
+store_navigation()
+print(first_product_search())
+for row in df['Item'].dropna()[1:]:
+    subsequent_search(row)
+    print(scraping_price())
 
 
 
