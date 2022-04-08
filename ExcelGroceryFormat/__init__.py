@@ -8,7 +8,6 @@ from openpyxl.styles import Font
 
 
 # Include the product images for reference
-
 def image_data():
     request = requests.get(
         'https://assets-prd-spr.unataops.com/web/product_small/f85526c802633749da817160b95b94d798fedd43.jpg',
