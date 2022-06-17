@@ -90,10 +90,10 @@ def following_product_searches():
 
 
 store_navigation()
-kansas_city_store_722(64154)
-time.sleep(10)
-first_product_search()
-following_product_searches()
+kansas_city_store_722()
+# time.sleep(10)
+# first_product_search()
+# following_product_searches()
 
 # develop accuracy changes
 # develop way to wipe out columns

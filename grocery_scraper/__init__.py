@@ -39,14 +39,16 @@ def store_navigation():
     click_maybe_later_text.click()
 
 
-def kansas_city_store_722(zip_code):
+def kansas_city_store_722():
     # Swap to Kansas City store via Store's Specials buttons
     time.sleep(5)
     specials = WebDriverWait(driver, timeout=20).until(EC.presence_of_element_located((
         By.XPATH, '//*[@id="specials-banner-desktop"]')))
     specials.click()
-    input_zip_code_bar = WebDriverWait(driver, timeout=20).until(EC.element_to_be_clickable((By.XPATH, '/html/body/flipp-router/flipp-store-selector-page/div/flipp-postal-selector/form/div[1]/span/input')))
-    input_zip_code_bar.send_keys(zip_code + Keys.ENTER)
+    time.sleep(3)
+    WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it(driver.find_element(By.CSS_SELECTOR, r'#\34 9f2faa2-a0f0-40a8-9395-8b5353352cbc')))
+    zip_text = driver.find_element(By.XPATH, '/html//input[@id="postal-input"]')
+    zip_text.send_keys('64154' + Keys.ENTER)
 
 
 # Initializing BeautifulSoup and scraping for the price
