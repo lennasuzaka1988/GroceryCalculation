@@ -89,10 +89,9 @@ def following_product_searches():
         attach_excel_images()
 
 
-store_navigation()
-kansas_city_store_722()
-# time.sleep(10)
-# first_product_search()
+store_navigation('64154')
+time.sleep(5)
+first_product_search()
 # following_product_searches()
 
 # develop accuracy changes

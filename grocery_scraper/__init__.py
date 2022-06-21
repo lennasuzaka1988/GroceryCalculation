@@ -28,30 +28,33 @@ def clear_search():
     hover.perform()
 
 
-# Swapping to the appropriate store
-def store_navigation():
-    driver.get('https://www.sprouts.com')
+# The unnecessarily long process to change the location
+def store_navigation(zip_code):
+    driver.get('https://www.sprouts.com/weekly-ad/')
+    store_selector = WebDriverWait(driver, timeout=10).until(
+        EC.visibility_of_element_located(
+            (By.CSS_SELECTOR,
+             '#secondary-navigation > div > ul > li:nth-child(1) > div > '
+             'unata-unified-header > div > div:nth-child(2) > span > unata-storeid-label > '
+             'a')))
+    store_selector.click()
+    zip_code_input = WebDriverWait(driver, timeout=10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR,
+                                    'unata-root > dialog-holder > dialog-wrapper > div > unata-store-selector '
+                                    '> div > div > div:nth-child(2) > div > div > unata-store-map-mapbox > '
+                                    'div > div:nth-child(1) > div > div:nth-child(2) > form > div > input')))
+    zip_code_input.click()
+    zip_code_input.send_keys(zip_code + Keys.ENTER)
+    click_select_button = WebDriverWait(driver, timeout=10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR,
+                                    'unata-root > dialog-holder > dialog-wrapper > div > unata-store-selector > '
+                                    'div > div > div:nth-child(2) > div > div > unata-store-map-mapbox > div > '
+                                    'div:nth-child(2) > div > div > div > ol > li:nth-child(1) > table > tbody > tr > '
+                                    'td:nth-child(2) > button')))
+    click_select_button.click()
 
-    # Waiting for that damn initial popup
-    click_maybe_later_text = WebDriverWait(driver, timeout=30).until(
-        EC.element_to_be_clickable((By.XPATH, '//*[@id="pop-up-dismiss"]')),
-    )
-    click_maybe_later_text.click()
 
-
-def kansas_city_store_722():
-    # Swap to Kansas City store via Store's Specials buttons
-    time.sleep(5)
-    specials = WebDriverWait(driver, timeout=20).until(EC.presence_of_element_located((
-        By.XPATH, '//*[@id="specials-banner-desktop"]')))
-    specials.click()
-    time.sleep(3)
-    WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it(driver.find_element(By.CSS_SELECTOR, r'#\34 9f2faa2-a0f0-40a8-9395-8b5353352cbc')))
-    zip_text = driver.find_element(By.XPATH, '/html//input[@id="postal-input"]')
-    zip_text.send_keys('64154' + Keys.ENTER)
-
-
-# Initializing BeautifulSoup and scraping for the price
+# Initializing BeautifulSoup to scrape for price
 def scraping_price():
     time.sleep(5)
     html = driver.page_source
@@ -63,11 +66,10 @@ def scraping_price():
         return i.text
 
 
+# Closing out of the product's expanded info window
 def price_scrape_navigation():
-    # Closing out of the product's expanded info window
     close_out = WebDriverWait(driver, timeout=30).until(EC.element_to_be_clickable((
         By.XPATH, '//div[1]/div/div/div/div/div[1]/button')))
-
     close_out.click()
 
     # Clearing the search bar for future inputs before using BeautifulSoup
@@ -85,21 +87,17 @@ def first_search(product):
                                         '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input')))
     input_product.send_keys(product + Keys.ENTER)
 
-    # Fetching the new page
-    current_page = driver.current_url
-    driver.get(current_page)
-
     # Waiting for and closing the shopping options pop-up
     shopping_selector_wait = WebDriverWait(driver, timeout=90).until(EC.visibility_of_element_located((
         By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]')))
     shopping_selector_wait.click()
 
     # Clicking on the most accurate result of the search
-    wait_until_info_expand = WebDriverWait(driver, timeout=30).until(EC.element_to_be_clickable((
+    wait_until_product_info_expand = WebDriverWait(driver, timeout=30).until(EC.element_to_be_clickable((
         By.CSS_SELECTOR, 'ol > li:nth-child(1) > div > div.cell-image-wrapper > span.cell-image.show')))
     action = ActionChains(driver)
     time.sleep(3)
-    action.move_to_element(wait_until_info_expand).click().perform()
+    action.move_to_element(wait_until_product_info_expand).click().perform()
     time.sleep(5)
 
     # Scraping for the image
@@ -108,13 +106,14 @@ def first_search(product):
     price_scrape_navigation()
 
     first_price.append(scraping_price())
-    return (first_price, first_image_url)
+    # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
+    print(first_price, first_image_url)
 
 
 def subsequent_search(product):
     prices = []
     image_url = []
-
+    time.sleep(5)
     # Same as first_search function but targeting new elements from subsequent results
     input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
         By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
@@ -135,7 +134,8 @@ def subsequent_search(product):
     price_scrape_navigation()
 
     prices.append(scraping_price())
-    return (prices, image_url)
+    # DON'T REMOVE DAMMIT
+    print(prices, image_url)
 
 
 def image_scrape():
