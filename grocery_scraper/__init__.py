@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -86,18 +87,18 @@ def first_search(product):
 
     # Scraping for the image
     time.sleep(5)
-
     first_image_url.append(image_scrape())
-    print(url_image_parse())
+    for img in first_image_url:
+        print(url_image_parse(img))
 
 # first_price.append(scraping_price())
 # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
 # return (first_price, first_image_url)
 
 
-def url_image_parse():
+def url_image_parse(img):
     # Stripping down the url in order to access the image
-    image_parser = urlparse(image_scrape())
+    image_parser = urlparse(img)
     elements = {
         'scheme': image_parser.scheme,
         'netloc': image_parser.netloc,
@@ -137,8 +138,14 @@ def subsequent_search(product):
 
 def image_scrape():
     time.sleep(5)
-    image_src = WebDriverWait(driver, timeout=30).until(EC.visibility_of_element_located((
+    image_src = WebDriverWait(driver, timeout=60).until(EC.element_located_to_be_selected((
         By.XPATH,
         '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/'
         'react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute('src')
-    return image_src
+    image_alt_source = WebDriverWait(driver, timeout=60).until(EC.element_located_to_be_selected((By.XPATH,
+                                                                                                  '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/div[3]/span'))).get_attribute('data-src')
+    try:
+        return image_src
+    except TimeoutException:
+        return image_alt_source
+
