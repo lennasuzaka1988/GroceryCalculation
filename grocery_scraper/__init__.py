@@ -5,8 +5,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from urllib.parse import urlparse
 import time
-
 
 # Initializing the webdriver
 options = webdriver.ChromeOptions()
@@ -56,24 +56,16 @@ def store_navigation(zip_code):
 
 # Initializing BeautifulSoup to scrape for price
 def scraping_price():
+    # Clearing the search bar for future inputs before using BeautifulSoup
+    clear_search()
     time.sleep(5)
     html = driver.page_source
     soup = BeautifulSoup(html, 'html5lib')
     soup.prettify()
     price = soup.select(
-        'react-product-price:nth-child(1) > div > div > span:nth-child(1) > span:nth-child(1)')
+        '#content > div > div.shop-layout > div.content-wrapper > div > div:nth-child(2) > ol > li:nth-child(1) > div > react-item-tile > div > div > div.css-1ylu0bo > div.css-0 > span')
     for i in price:
         return i.text
-
-
-# Closing out of the product's expanded info window
-def price_scrape_navigation():
-    close_out = WebDriverWait(driver, timeout=30).until(EC.element_to_be_clickable((
-        By.XPATH, '//div[1]/div/div/div/div/div[1]/button')))
-    close_out.click()
-
-    # Clearing the search bar for future inputs before using BeautifulSoup
-    clear_search()
 
 
 # Function is for first product ONLY since paths and JavaScript changes a little for the subsequent searches
@@ -92,22 +84,29 @@ def first_search(product):
         By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]')))
     shopping_selector_wait.click()
 
-    # Clicking on the most accurate result of the search
-    wait_until_product_info_expand = WebDriverWait(driver, timeout=30).until(EC.element_to_be_clickable((
-        By.CSS_SELECTOR, 'ol > li:nth-child(1) > div > div.cell-image-wrapper > span.cell-image.show')))
-    action = ActionChains(driver)
-    time.sleep(3)
-    action.move_to_element(wait_until_product_info_expand).click().perform()
+    # Scraping for the image
     time.sleep(5)
 
-    # Scraping for the image
     first_image_url.append(image_scrape())
+    print(url_image_parse())
 
-    price_scrape_navigation()
+# first_price.append(scraping_price())
+# Don't you dare remove the redundant parentheses lest you want everything to go kaboom
+# return (first_price, first_image_url)
 
-    first_price.append(scraping_price())
-    # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
-    print(first_price, first_image_url)
+
+def url_image_parse():
+    # Stripping down the url in order to access the image
+    image_parser = urlparse(image_scrape())
+    elements = {
+        'scheme': image_parser.scheme,
+        'netloc': image_parser.netloc,
+        'path': image_parser.path,
+        'params': image_parser.params,
+        'query': image_parser.query,
+        'fragment': image_parser.fragment
+    }
+    return elements
 
 
 def subsequent_search(product):
@@ -131,15 +130,15 @@ def subsequent_search(product):
 
     image_url.append(image_scrape())
 
-    price_scrape_navigation()
-
-    prices.append(scraping_price())
+    # prices.append(scraping_price())
     # DON'T REMOVE DAMMIT
-    print(prices, image_url)
+    # return (prices, image_url)
 
 
 def image_scrape():
-    image_src = driver.find_element(
-        By.CSS_SELECTOR, 'react-product-image-carousel > div > div.css-1t1rhf9 > div > figure > div > img')\
-        .get_attribute('src')
+    time.sleep(5)
+    image_src = WebDriverWait(driver, timeout=30).until(EC.visibility_of_element_located((
+        By.XPATH,
+        '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/'
+        'react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute('src')
     return image_src
