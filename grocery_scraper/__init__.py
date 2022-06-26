@@ -69,33 +69,6 @@ def scraping_price():
         return i.text
 
 
-# Function is for first product ONLY since paths and JavaScript changes a little for the subsequent searches
-def first_search(product):
-    first_price = []
-    first_image_url = []
-
-    # Input product from Excel spreadsheet and automating search
-    input_product = WebDriverWait(driver, timeout=30).until(
-        EC.presence_of_element_located((By.XPATH,
-                                        '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input')))
-    input_product.send_keys(product + Keys.ENTER)
-
-    # Waiting for and closing the shopping options pop-up
-    shopping_selector_wait = WebDriverWait(driver, timeout=90).until(EC.visibility_of_element_located((
-        By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]')))
-    shopping_selector_wait.click()
-
-    # Scraping for the image
-    time.sleep(5)
-    first_image_url.append(image_scrape())
-    for img in first_image_url:
-        print(url_image_parse(img))
-
-# first_price.append(scraping_price())
-# Don't you dare remove the redundant parentheses lest you want everything to go kaboom
-# return (first_price, first_image_url)
-
-
 def url_image_parse(img):
     # Stripping down the url in order to access the image
     image_parser = urlparse(img)
@@ -108,6 +81,35 @@ def url_image_parse(img):
         'fragment': image_parser.fragment
     }
     return elements
+
+
+# Function is for first product ONLY since paths and JavaScript changes a little for the subsequent searches
+def first_search(product):
+    first_price = []
+    first_image_url = []
+
+    # Input product from Excel spreadsheet and automating search
+    input_product = WebDriverWait(driver, timeout=30).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input')))
+    input_product.send_keys(product + Keys.ENTER)
+
+    # Waiting for and closing the shopping options pop-up
+    time.sleep(5)
+    shopping_selector_wait = WebDriverWait(driver, timeout=90).until(EC.visibility_of_element_located((
+        By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]')))
+    shopping_selector_wait.click()
+
+    # Scraping for the image
+    time.sleep(5)
+    first_image_url.append(image_scrape())
+    print(first_image_url)
+    # for img in first_image_url:
+    #     print(url_image_parse(img))
+
+    # first_price.append(scraping_price())
+    # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
+    # return (first_price, first_image_url)
 
 
 def subsequent_search(product):
@@ -130,7 +132,6 @@ def subsequent_search(product):
     action.move_to_element(wait_until_expand_info).click().perform()
 
     image_url.append(image_scrape())
-
     # prices.append(scraping_price())
     # DON'T REMOVE DAMMIT
     # return (prices, image_url)
@@ -138,14 +139,7 @@ def subsequent_search(product):
 
 def image_scrape():
     time.sleep(5)
-    image_src = WebDriverWait(driver, timeout=60).until(EC.element_located_to_be_selected((
-        By.XPATH,
-        '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/'
-        'react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute('src')
-    image_alt_source = WebDriverWait(driver, timeout=60).until(EC.element_located_to_be_selected((By.XPATH,
-                                                                                                  '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/div[3]/span'))).get_attribute('data-src')
     try:
-        return image_src
+        return WebDriverWait(driver, timeout=60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute('src')
     except TimeoutException:
-        return image_alt_source
-
+        return WebDriverWait(driver, timeout=60).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute('data-src')
