@@ -87,6 +87,7 @@ def url_image_parse(img):
 def first_search(product):
     first_price = []
     first_image_url = []
+    image_url_stripped = []
 
     # Input product from Excel spreadsheet and automating search
     input_product = WebDriverWait(driver, timeout=30).until(
@@ -104,8 +105,10 @@ def first_search(product):
     time.sleep(5)
     first_image_url.append(image_scrape())
     print(first_image_url)
-    # for img in first_image_url:
-    #     print(url_image_parse(img))
+    for img in first_image_url:
+        url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
+        image_url_stripped.append(url_split)
+    driver.quit()
 
     # first_price.append(scraping_price())
     # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
