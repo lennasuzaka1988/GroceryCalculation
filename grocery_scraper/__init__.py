@@ -57,7 +57,6 @@ def store_navigation(zip_code):
 
 # Initializing BeautifulSoup to scrape for price
 def scraping_price():
-    # Clearing the search bar for future inputs before using BeautifulSoup
     clear_search()
     time.sleep(5)
     html = driver.page_source
@@ -65,12 +64,19 @@ def scraping_price():
     soup.prettify()
     price = soup.select(
         '#content > div > div.shop-layout > div.content-wrapper > div > div:nth-child(2) > ol > li:nth-child(1) > div > react-item-tile > div > div > div.css-1ylu0bo > div.css-0 > span')
-    for i in price:
-        return i.text
+    if price == 'None':
+        price_2 = soup.select(
+            'react-product-price:nth-child(1) > div > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)'
+        )
+        for two in price_2:
+            return two.text.rsplit(' /ea', 1)[0]
+    else:
+        for i in price:
+            return i.text.rsplit(' /ea', 1)[0]
 
 
+# Stripping down the url in order to access the image
 def url_image_parse(img):
-    # Stripping down the url in order to access the image
     image_parser = urlparse(img)
     elements = {
         'scheme': image_parser.scheme,
@@ -104,20 +110,20 @@ def first_search(product):
     # Scraping for the image
     time.sleep(5)
     first_image_url.append(image_scrape())
-    print(first_image_url)
+
     for img in first_image_url:
         url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
         image_url_stripped.append(url_split)
-    driver.quit()
+    first_price.append(scraping_price())
 
-    # first_price.append(scraping_price())
     # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
-    # return (first_price, first_image_url)
+    return (first_price, image_url_stripped)
 
 
 def subsequent_search(product):
     prices = []
     image_url = []
+    img_url_stripped = []
     time.sleep(5)
     # Same as first_search function but targeting new elements from subsequent results
     input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
@@ -128,21 +134,23 @@ def subsequent_search(product):
     current_page = driver.current_url
     driver.get(current_page)
 
-    wait_until_expand_info = WebDriverWait(driver, timeout=30).until(EC.element_to_be_clickable((
-        By.CSS_SELECTOR, 'ol > li:nth-child(1) > div > div.cell-image-wrapper > span.cell-image.show')))
-
-    action = ActionChains(driver)
-    action.move_to_element(wait_until_expand_info).click().perform()
-
+    time.sleep(5)
     image_url.append(image_scrape())
-    # prices.append(scraping_price())
-    # DON'T REMOVE DAMMIT
-    # return (prices, image_url)
+
+    for img in image_url:
+        url_img_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
+        img_url_stripped.append(url_img_split)
+    prices.append(scraping_price())
+
+    # DON'T REMOVE PARENTHESES DAMMIT
+    return (prices, img_url_stripped)
 
 
 def image_scrape():
     time.sleep(5)
     try:
-        return WebDriverWait(driver, timeout=60).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute('src')
+        return WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((By.XPATH,
+                                                                                       '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute('src')
     except TimeoutException:
-        return WebDriverWait(driver, timeout=60).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute('data-src')
+        return WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                                                                                       'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute('data-src')

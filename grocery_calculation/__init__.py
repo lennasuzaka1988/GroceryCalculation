@@ -76,15 +76,16 @@ def attach_excel_images():
 def first_product_search():
     first_product = import_grocery_list.df_sprouts.iat[0, 1]
     first_product_result = first_search(first_product)
-    # all_prices_and_images.append(list(itertools.chain(*first_product_result)))
+    all_prices_and_images.append(list(itertools.chain(*first_product_result)))
     # price_and_image_scraping()
     # attach_excel_images()
-    return first_product_result
-#
-# def following_product_searches():
-#     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
-#         list_2_results = list(subsequent_search(row))
-#         all_prices_and_images.append(list(itertools.chain(*list_2_results)))
+    # return first_product_result
+
+
+def following_product_searches():
+    for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
+        list_2_results = list(subsequent_search(row))
+        all_prices_and_images.append(list(itertools.chain(*list_2_results)))
 #         price_and_image_scraping()
 #         attach_excel_images()
 
@@ -92,7 +93,8 @@ def first_product_search():
 store_navigation('64154')
 time.sleep(5)
 first_product_search()
-# following_product_searches()
+following_product_searches()
+print(all_prices_and_images)
 
 # develop accuracy changes
 # develop way to wipe out columns
