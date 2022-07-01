@@ -62,17 +62,15 @@ def scraping_price():
     html = driver.page_source
     soup = BeautifulSoup(html, 'html5lib')
     soup.prettify()
-    price = soup.select(
-        '#content > div > div.shop-layout > div.content-wrapper > div > div:nth-child(2) > ol > li:nth-child(1) > div > react-item-tile > div > div > div.css-1ylu0bo > div.css-0 > span')
-    if price == 'None':
+    if soup.select('li:nth-child(1) > div > react-item-tile > div > div > div:nth-child(3) > div:nth-child(1) > span:nth-child(1)'):
+        for i in soup.select('li:nth-child(1) > div > react-item-tile > div > div > div:nth-child(3) > div:nth-child(1) > span:nth-child(1)'):
+            return i.text.rsplit(' /ea', 1)[0]
+    else:
         price_2 = soup.select(
             'react-product-price:nth-child(1) > div > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)'
         )
         for two in price_2:
             return two.text.rsplit(' /ea', 1)[0]
-    else:
-        for i in price:
-            return i.text.rsplit(' /ea', 1)[0]
 
 
 # Stripping down the url in order to access the image
@@ -142,6 +140,7 @@ def subsequent_search(product):
         img_url_stripped.append(url_img_split)
     prices.append(scraping_price())
 
+    driver.quit()
     # DON'T REMOVE PARENTHESES DAMMIT
     return (prices, img_url_stripped)
 
@@ -150,7 +149,9 @@ def image_scrape():
     time.sleep(5)
     try:
         return WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((By.XPATH,
-                                                                                       '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute('src')
+                                                                                       '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute(
+            'src')
     except TimeoutException:
         return WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                                       'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute('data-src')
+                                                                                       'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute(
+            'data-src')

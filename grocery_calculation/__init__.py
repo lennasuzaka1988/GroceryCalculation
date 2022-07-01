@@ -11,6 +11,8 @@ from openpyxl_image_loader import SheetImageLoader
 from grocery_scraper import *
 import import_grocery_list
 
+import time
+
 # Have to separate Sprouts and Hy-Vee lists into different spreadsheets as scraping only applies to Sprouts
 # (Hy-Vee disallows scraping), info pulled from import_grocery_list module
 grocery_list_xlsx = '../Grocery List.xlsx'
@@ -30,10 +32,6 @@ def price_and_image_scraping():
             else:
                 ws_sprouts.cell(row=row_index, column=column_index, value=value)
     wb.save(grocery_list_xlsx)
-
-
-# Need to convert results from all_prices_and_images() to dataframe for scraping output
-product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image'])
 
 
 def attach_excel_images():
@@ -71,6 +69,10 @@ def attach_excel_images():
     workbk.save(grocery_list_xlsx)
 
 
+# Need to convert results from all_prices_and_images() to dataframe for scraping output
+product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image'])
+
+
 # Searching for first product (requires separate function because of changed HTML in first product's results page) and
 # subsequent products
 def first_product_search():
@@ -86,13 +88,15 @@ def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
         list_2_results = list(subsequent_search(row))
         all_prices_and_images.append(list(itertools.chain(*list_2_results)))
-#         price_and_image_scraping()
-#         attach_excel_images()
+
+    #         price_and_image_scraping()
+    #         attach_excel_images()
 
 
 store_navigation('64154')
 time.sleep(5)
 first_product_search()
+time.sleep(5)
 following_product_searches()
 print(all_prices_and_images)
 
