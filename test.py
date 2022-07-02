@@ -36,11 +36,10 @@ def modal_close_out():
 
 
 def scraping_price():
-    html = driver.page_source
-    soup = BeautifulSoup(html, 'html5lib')
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup.prettify()
-    return soup.select('.css-f85de')
-        # print(elem.get('title'))
+    for elem in soup.find_all('ol', {'title':'Apple'}, class_='cell-container'):
+        print(elem)
 
 
 print(modal_close_out())
