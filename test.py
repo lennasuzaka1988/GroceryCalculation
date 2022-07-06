@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urlparse
 import time
+from bs4 import SoupStrainer
 
 
 
@@ -32,15 +33,17 @@ def modal_close_out():
         By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]')))
     shopping_selector_wait.click()
     time.sleep(5)
-    scraping_price()
+
+
+title_tag = SoupStrainer('div', class_=)
 
 
 def scraping_price():
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    soup = BeautifulSoup(driver.page_source, 'html.parser', parse_only=title_tag)
     soup.prettify()
-    for elem in soup.find_all('ol', {'title':'Apple'}, class_='cell-container'):
-        print(elem)
+    print(title_tag)
 
 
-print(modal_close_out())
+modal_close_out()
+scraping_price()
 
