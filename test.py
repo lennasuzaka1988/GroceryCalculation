@@ -36,24 +36,16 @@ product_name = 'Gala Apple'
 
 
 def closest_product_result():
-    product_list = []
+    # product_list = []
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup.prettify()
-    for ol in soup.find_all('div', class_='css-f85de'):
-        for elem in ol(string=re.compile(product_name)):
-            product_list.append(elem.text)
-    print(product_list)
-
-
-def closest_product_price_scrape():
-    product_soup = BeautifulSoup(driver.page_source, 'html.parser')
-    product_soup.prettify()
-    ol = product_soup.find('ol')
-    for li in ol.children:
-        return li
+    product_input = soup.find(string=re.compile(product_name))
+    if product_input:
+        return product_input.next_sibling
+    # Find the price next to product input
 
 
 modal_close_out()
 print(closest_product_result())
-time.sleep(10)
+time.sleep(5)
 driver.quit()
