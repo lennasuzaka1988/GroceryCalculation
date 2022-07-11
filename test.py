@@ -11,7 +11,6 @@ import time
 import re
 
 
-
 options = webdriver.ChromeOptions()
 options.add_argument('start-maximized')
 options.add_experimental_option('excludeSwitches', ['enable-automation'])
@@ -36,13 +35,25 @@ def modal_close_out():
 product_name = 'Gala Apple'
 
 
-def scraping_price():
+def closest_product_result():
+    product_list = []
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup.prettify()
     for ol in soup.find_all('div', class_='css-f85de'):
         for elem in ol(string=re.compile(product_name)):
-            print(elem.text)
+            product_list.append(elem.text)
+    print(product_list)
+
+
+def closest_product_price_scrape():
+    product_soup = BeautifulSoup(driver.page_source, 'html.parser')
+    product_soup.prettify()
+    ol = product_soup.find('ol')
+    for li in ol.children:
+        return li
 
 
 modal_close_out()
-scraping_price()
+print(closest_product_result())
+time.sleep(10)
+driver.quit()
