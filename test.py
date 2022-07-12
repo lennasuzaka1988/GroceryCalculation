@@ -40,12 +40,17 @@ def closest_product_result():
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup.prettify()
     product_input = soup.find(string=re.compile(product_name))
-    if product_input:
-        return product_input.next_sibling
-    # Find the price next to product input
+    product_input.select_one('h2:has(span[@css-23422]) + ul')
+
+
+
+
+
+
+# Find the price next to product input
 
 
 modal_close_out()
-print(closest_product_result())
 time.sleep(5)
+closest_product_result()
 driver.quit()
