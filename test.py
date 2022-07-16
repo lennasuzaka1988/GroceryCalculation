@@ -20,7 +20,6 @@ options.add_argument('--disable-notifications')
 options.add_experimental_option('detach', True)
 driver = webdriver.Chrome(options=options)
 
-
 driver.get('https://shop.sprouts.com/search?search_term=apple')
 
 
@@ -36,20 +35,19 @@ product_name = 'Gala Apple'
 
 
 def closest_product_result():
-    # product_list = []
+    product_input_list = []
+    product_input_price_list = []
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup.prettify()
     product_input = soup.find(string=re.compile(product_name))
-    product_input.select_one('h2:has(span[@css-23422]) + ul')
-
-
-
-
+    product_input_list.append(product_input)
+    product_input_price_list.append(product_input.find_parent().find_parent().find('div', class_='css-1kh7mkb').text.strip('/lb'))
+    print(product_input_list)
+    print(product_input_price_list)
+    # product_input.select_one('h2:has(span[@css-23422]) + ul')
 
 
 # Find the price next to product input
-
-
 modal_close_out()
 time.sleep(5)
 closest_product_result()
