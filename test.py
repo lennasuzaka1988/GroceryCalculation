@@ -35,8 +35,8 @@ def closest_product_result(product_name, soup):
     # product_input_price_list = []
     product_input = soup.find(string=re.compile(product_name))
     # parent = product_input.find_parent().find_parent().find_parent().find_parent().find('react-product-price').find('span', class_='css-dr3s47').get_text()
-    for parent in product_input.parents:
-        print(parent.find('react-product-price'))
+    return product_input.find_parent().find_parent().find_previous_sibling().get_text().strip(' /ea', ' /lb')
+
     # return product_input
     # product_input_list.append(product_input)
     # product_input_price_list.append(
