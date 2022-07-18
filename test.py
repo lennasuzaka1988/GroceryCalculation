@@ -30,25 +30,22 @@ def modal_close_out():
     time.sleep(5)
 
 
+def stripping_text(string):
+    reg = re.compile(r'\s.[a-z]+')
+    strip_context = reg.sub('', string)
+    return strip_context
+
+
 def closest_product_result(product_name, soup):
-    # product_input_list = []
-    # product_input_price_list = []
+    product_input_list = []
+    product_input_price_list = []
     product_input = soup.find(string=re.compile(product_name))
-    # parent = product_input.find_parent().find_parent().find_parent().find_parent().find('react-product-price').find('span', class_='css-dr3s47').get_text()
-    return product_input.find_parent().find_parent().find_previous_sibling().get_text().strip(' /ea', ' /lb')
-
-    # return product_input
-    # product_input_list.append(product_input)
-    # product_input_price_list.append(
-    #     product_input.find_parent())
-
-    # return product_input_list, product_input_price_list
+    price_text = product_input.find_parent().find_parent().find_previous_sibling().get_text()
+    product_input_list.append(product_input)
+    product_input_price_list.append(stripping_text(price_text))
+    return (product_input_list, product_input_price_list)
 
 
-# def closest_product_result_alt()
-
-
-# Find the price next to product input
 modal_close_out()
 time.sleep(5)
 bsoup = BeautifulSoup(driver.page_source, 'html.parser')
