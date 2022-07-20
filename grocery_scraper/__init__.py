@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urlparse
 import time
+import re
 
 # Initializing the webdriver
 options = webdriver.ChromeOptions()
@@ -27,6 +28,14 @@ def clear_search():
     hover = ActionChains(driver).move_to_element(input_element_wait).click().key_down(Keys.CONTROL) \
         .send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE)
     hover.perform()
+
+
+def modal_close_out():
+    time.sleep(5)
+    shopping_selector_wait = WebDriverWait(driver, timeout=30).until(EC.visibility_of_element_located((
+        By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]')))
+    shopping_selector_wait.click()
+    time.sleep(5)
 
 
 # The unnecessarily long process to change the location
@@ -55,22 +64,22 @@ def store_navigation(zip_code):
     click_select_button.click()
 
 
+def stripping_text(string):
+    reg = re.compile(r'\s.[a-z]+')
+    strip_context = reg.sub('', string)
+    return strip_context
+
+
 # Initializing BeautifulSoup to scrape for price
-def scraping_price():
-    clear_search()
+def closest_product_result(product_name, soup):
     time.sleep(5)
-    html = driver.page_source
-    soup = BeautifulSoup(html, 'html5lib')
-    soup.prettify()
-    if soup.select('li:nth-child(1) > div > react-item-tile > div > div > div:nth-child(3) > div:nth-child(1) > span:nth-child(1)'):
-        for i in soup.select('li:nth-child(1) > div > react-item-tile > div > div > div:nth-child(3) > div:nth-child(1) > span:nth-child(1)'):
-            return i.text.rsplit(' /ea', 1)[0]
-    else:
-        price_2 = soup.select(
-            'react-product-price:nth-child(1) > div > div:nth-child(2) > span:nth-child(1) > span:nth-child(1)'
-        )
-        for two in price_2:
-            return two.text.rsplit(' /ea', 1)[0]
+    product_input_list = []
+    product_input_price_list = []
+    product_input = soup.find(string=re.compile(product_name))
+    product_input_list.append(product_input)
+    price_text = product_input.find_parent().find_parent().find_previous_sibling().get_text()
+    product_input_price_list.append(stripping_text(price_text))
+    return (product_input_list, product_input_price_list)
 
 
 # Stripping down the url in order to access the image
@@ -100,11 +109,9 @@ def first_search(product):
     input_product.send_keys(product + Keys.ENTER)
 
     # Waiting for and closing the shopping options pop-up
+    modal_close_out()
     time.sleep(5)
-    shopping_selector_wait = WebDriverWait(driver, timeout=90).until(EC.visibility_of_element_located((
-        By.XPATH, '/html//button[@id="shopping-selector-parent-process-modal-close-click"]')))
-    shopping_selector_wait.click()
-
+    closest_product_result(product, bsoup)
     # Scraping for the image
     time.sleep(5)
     first_image_url.append(image_scrape())
@@ -112,7 +119,6 @@ def first_search(product):
     for img in first_image_url:
         url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
         image_url_stripped.append(url_split)
-    first_price.append(scraping_price())
 
     # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
     return (first_price, image_url_stripped)
@@ -155,3 +161,9 @@ def image_scrape():
         return WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((By.CSS_SELECTOR,
                                                                                        'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute(
             'data-src')
+
+bsoup = BeautifulSoup(driver.page_source, 'html.parser')
+bsoup.prettify()
+
+store_navigation('64154')
+first_search('Gala Apple')
