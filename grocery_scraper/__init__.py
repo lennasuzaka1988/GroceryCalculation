@@ -41,7 +41,7 @@ def modal_close_out():
 # The unnecessarily long process to change the location
 def store_navigation(zip_code):
     driver.get('https://www.sprouts.com/weekly-ad/')
-    store_selector = WebDriverWait(driver, timeout=10).until(
+    store_selector = WebDriverWait(driver, timeout=20).until(
         EC.visibility_of_element_located(
             (By.CSS_SELECTOR,
              '#secondary-navigation > div > ul > li:nth-child(1) > div > '
@@ -62,6 +62,7 @@ def store_navigation(zip_code):
                                     'div:nth-child(2) > div > div > div > ol > li:nth-child(1) > table > tbody > tr > '
                                     'td:nth-child(2) > button')))
     click_select_button.click()
+    time.sleep(5)
 
 
 def stripping_text(string):
@@ -72,12 +73,12 @@ def stripping_text(string):
 
 # Initializing BeautifulSoup to scrape for price
 def closest_product_result(product_name, soup):
-    time.sleep(5)
+    time.sleep(10)
     product_input_list = []
     product_input_price_list = []
-    product_input = soup.find(string=re.compile(product_name))
+    product_input = soup.find('ol').find(string=re.compile(product_name))
     product_input_list.append(product_input)
-    price_text = product_input.find_parent().find_parent().find_previous_sibling().get_text()
+    price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
     product_input_price_list.append(stripping_text(price_text))
     return (product_input_list, product_input_price_list)
 
@@ -99,58 +100,57 @@ def url_image_parse(img):
 # Function is for first product ONLY since paths and JavaScript changes a little for the subsequent searches
 def first_search(product):
     first_price = []
-    first_image_url = []
-    image_url_stripped = []
 
     # Input product from Excel spreadsheet and automating search
     input_product = WebDriverWait(driver, timeout=30).until(
         EC.presence_of_element_located((By.XPATH,
                                         '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input')))
     input_product.send_keys(product + Keys.ENTER)
-
     # Waiting for and closing the shopping options pop-up
     modal_close_out()
-    time.sleep(5)
-    closest_product_result(product, bsoup)
-    # Scraping for the image
-    time.sleep(5)
-    first_image_url.append(image_scrape())
-
-    for img in first_image_url:
-        url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
-        image_url_stripped.append(url_split)
+    time.sleep(10)
 
     # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
-    return (first_price, image_url_stripped)
+    # return (first_price, image_url_stripped)
 
 
-def subsequent_search(product):
-    prices = []
-    image_url = []
-    img_url_stripped = []
-    time.sleep(5)
-    # Same as first_search function but targeting new elements from subsequent results
-    input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
-        By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
+# def subsequent_search(product):
+#     prices = []
+#     image_url = []
+#     img_url_stripped = []
+#     time.sleep(5)
+#     # Same as first_search function but targeting new elements from subsequent results
+#     input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
+#         By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
+#
+#     input_box.send_keys(product + Keys.ENTER)
+#
+#     current_page = driver.current_url
+#     driver.get(current_page)
+#
+#     time.sleep(5)
+#     image_url.append(image_scrape())
+#
+#     for img in image_url:
+#         url_img_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
+#         img_url_stripped.append(url_img_split)
+#     prices.append(scraping_price())
+#
+#     driver.quit()
+#     # DON'T REMOVE PARENTHESES DAMMIT
+#     return (prices, img_url_stripped)
 
-    input_box.send_keys(product + Keys.ENTER)
 
-    current_page = driver.current_url
-    driver.get(current_page)
-
-    time.sleep(5)
-    image_url.append(image_scrape())
-
-    for img in image_url:
-        url_img_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
-        img_url_stripped.append(url_img_split)
-    prices.append(scraping_price())
-
-    driver.quit()
-    # DON'T REMOVE PARENTHESES DAMMIT
-    return (prices, img_url_stripped)
+def image_scrape_results():
+    # Scraping for the image
+    first_image_url = []
+    image_url_stripped = []
+    # first_image_url.append(image_scrape())
 
 
+# for img in first_image_url:
+#     url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
+#     image_url_stripped.append(url_split)
 def image_scrape():
     time.sleep(5)
     try:
@@ -162,8 +162,11 @@ def image_scrape():
                                                                                        'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute(
             'data-src')
 
-bsoup = BeautifulSoup(driver.page_source, 'html.parser')
-bsoup.prettify()
 
-store_navigation('64154')
-first_search('Gala Apple')
+def store_scraping():
+    store_navigation('64154')
+    first_search('Gala Apple')
+    time.sleep(10)
+    bsoup = BeautifulSoup(driver.page_source, 'html.parser')
+    bsoup.prettify()
+    closest_product_result('Gala Apple', bsoup)
