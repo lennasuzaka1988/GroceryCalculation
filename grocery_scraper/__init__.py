@@ -141,16 +141,17 @@ def first_search(product):
 #     return (prices, img_url_stripped)
 
 
-def image_scrape_results():
-    # Scraping for the image
-    first_image_url = []
-    image_url_stripped = []
-    # first_image_url.append(image_scrape())
+def img_url_list():
+    time.sleep(5)
+    img_url = []
+    img_url_stripped = []
+    img_url.append(image_scrape())
+    for img in img_url:
+        url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
+        img_url_stripped.append(url_split)
+    return img_url_stripped
 
 
-# for img in first_image_url:
-#     url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
-#     image_url_stripped.append(url_split)
 def image_scrape():
     time.sleep(5)
     try:
@@ -169,4 +170,7 @@ def store_scraping():
     time.sleep(10)
     bsoup = BeautifulSoup(driver.page_source, 'html.parser')
     bsoup.prettify()
-    closest_product_result('Gala Apple', bsoup)
+    return closest_product_result('Gala Apple', bsoup)
+
+
+print(store_scraping())
