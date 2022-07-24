@@ -80,7 +80,8 @@ def closest_product_result(product_name, soup):
     product_input_list.append(product_input)
     price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
     product_input_price_list.append(stripping_text(price_text))
-    return (product_input_list, product_input_price_list)
+    product_url = product_input.find_parent().find_parent().find_parent().find_parent().find_previous_sibling().find('img')
+    return product_url
 
 
 # Stripping down the url in order to access the image
