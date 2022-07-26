@@ -84,6 +84,7 @@ def closest_product_result(product_name, soup):
     product_input_list.append(product_input)
     price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
     product_input_price_list.append(stripping_text(price_text))
+
     direct_to_img = product_input.find_parent().find_parent().find_parent().find_parent().find_previous_sibling().find('img')['src']
     stripped_img_url = url_image_parse(direct_to_img)['path'].rsplit('format(jpg)/', 1)[1]
     img_url_stripped.append(stripped_img_url)
@@ -116,44 +117,27 @@ def first_searches(product):
     modal_close_out()
     time.sleep(10)
 
-# def subsequent_search(product):
-#     prices = []
-#     image_url = []
-#     img_url_stripped = []
-#     time.sleep(5)
-#     # Same as first_search function but targeting new elements from subsequent results
-#     input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
-#         By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
-#
-#     input_box.send_keys(product + Keys.ENTER)
-#
-#     current_page = driver.current_url
-#     driver.get(current_page)
-#
-#     time.sleep(5)
-#     image_url.append(image_scrape())
-#
-#     for img in image_url:
-#         url_img_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
-#         img_url_stripped.append(url_img_split)
-#     prices.append(scraping_price())
-#
-#     driver.quit()
-#     # DON'T REMOVE PARENTHESES DAMMIT
-#     return (prices, img_url_stripped)
+
+def subsequent_search(product):
+    time.sleep(5)
+    # Same as first_search function but targeting new elements from subsequent results
+    input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
+        By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
+
+    input_box.send_keys(product + Keys.ENTER)
 
 
 def initial_final_result(product_name):
     first_searches(product_name)
     time.sleep(10)
-    bsoup = BeautifulSoup(driver.page_source, 'html.parser')
-    bsoup.prettify()
-    return closest_product_result(product_name, bsoup)
+    beautiful_soup = BeautifulSoup(driver.page_source, 'html.parser')
+    beautiful_soup.prettify()
+    return closest_product_result(product_name, beautiful_soup)
 
 
 def final_result(product_name):
     clear_search_and_input(product_name)
     time.sleep(10)
-    bsoup = BeautifulSoup(driver.page_source, 'html.parser')
-    bsoup.prettify()
-    return closest_product_result(product_name, bsoup)
+    beautiful_soup = BeautifulSoup(driver.page_source, 'html.parser')
+    beautiful_soup.prettify()
+    return closest_product_result(product_name, beautiful_soup)
