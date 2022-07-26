@@ -70,35 +70,34 @@ def attach_excel_images():
 
 
 # Need to convert results from all_prices_and_images() to dataframe for scraping output
-product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image'])
+product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
 
 
 # Searching for first product (requires separate function because of changed HTML in first product's results page) and
 # subsequent products
-def first_product_search():
-    first_product = import_grocery_list.df_sprouts.iat[0, 1]
-    first_product_result = first_search(first_product)
+def product_searches():
+    product = import_grocery_list.df_sprouts.iat[0, 1]
+    first_product_result = initial_final_result(product)
     all_prices_and_images.append(list(itertools.chain(*first_product_result)))
-    # price_and_image_scraping()
+    price_and_image_scraping()
     # attach_excel_images()
     # return first_product_result
 
 
 def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
-        list_2_results = list(subsequent_search(row))
+        list_2_results = list(final_result(row))
         all_prices_and_images.append(list(itertools.chain(*list_2_results)))
-
-    #         price_and_image_scraping()
+        price_and_image_scraping()
     #         attach_excel_images()
 
 
 store_navigation('64154')
 time.sleep(5)
-first_product_search()
+product_searches()
 time.sleep(5)
 following_product_searches()
+time.sleep(5)
 print(all_prices_and_images)
-
 # develop accuracy changes
 # develop way to wipe out columns

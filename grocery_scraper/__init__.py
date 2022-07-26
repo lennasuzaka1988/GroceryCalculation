@@ -22,12 +22,15 @@ driver = webdriver.Chrome(options=options)
 
 
 # Clearing the search bar after every search for a product
-def clear_search():
+def clear_search_and_input(product):
     input_element_wait = WebDriverWait(driver, timeout=10).until(EC.presence_of_element_located((
         By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
     hover = ActionChains(driver).move_to_element(input_element_wait).click().key_down(Keys.CONTROL) \
         .send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE)
     hover.perform()
+    input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located(
+        (By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
+    input_box.send_keys(product + Keys.ENTER)
 
 
 def modal_close_out():
@@ -76,11 +79,15 @@ def closest_product_result(product_name, soup):
     time.sleep(10)
     product_input_list = []
     product_input_price_list = []
+    img_url_stripped = []
     product_input = soup.find('ol').find(string=re.compile(product_name))
     product_input_list.append(product_input)
     price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
     product_input_price_list.append(stripping_text(price_text))
-    return (product_input_list, product_input_price_list)
+    direct_to_img = product_input.find_parent().find_parent().find_parent().find_parent().find_previous_sibling().find('img')['src']
+    stripped_img_url = url_image_parse(direct_to_img)['path'].rsplit('format(jpg)/', 1)[1]
+    img_url_stripped.append(stripped_img_url)
+    return (product_input_price_list, img_url_stripped)
 
 
 # Stripping down the url in order to access the image
@@ -98,21 +105,16 @@ def url_image_parse(img):
 
 
 # Function is for first product ONLY since paths and JavaScript changes a little for the subsequent searches
-def first_search(product):
-    first_price = []
-
+def first_searches(product):
     # Input product from Excel spreadsheet and automating search
     input_product = WebDriverWait(driver, timeout=30).until(
         EC.presence_of_element_located((By.XPATH,
                                         '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input')))
     input_product.send_keys(product + Keys.ENTER)
+
     # Waiting for and closing the shopping options pop-up
     modal_close_out()
     time.sleep(10)
-
-    # Don't you dare remove the redundant parentheses lest you want everything to go kaboom
-    # return (first_price, image_url_stripped)
-
 
 # def subsequent_search(product):
 #     prices = []
@@ -141,32 +143,17 @@ def first_search(product):
 #     return (prices, img_url_stripped)
 
 
-def image_scrape_results():
-    # Scraping for the image
-    first_image_url = []
-    image_url_stripped = []
-    # first_image_url.append(image_scrape())
-
-
-# for img in first_image_url:
-#     url_split = url_image_parse(img)['path'].rsplit('format(jpg)/', 1)[1]
-#     image_url_stripped.append(url_split)
-def image_scrape():
-    time.sleep(5)
-    try:
-        return WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((By.XPATH,
-                                                                                       '//*[@id="content"]/div/div[2]/div[2]/div/div[2]/ol/li[1]/div/react-item-tile/div/div/div[2]/button/div/div/span/img'))).get_attribute(
-            'src')
-    except TimeoutException:
-        return WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                                                       'main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > ol > li:nth-child(1) > div > div:nth-child(3) > span'))).get_attribute(
-            'data-src')
-
-
-def store_scraping():
-    store_navigation('64154')
-    first_search('Gala Apple')
+def initial_final_result(product_name):
+    first_searches(product_name)
     time.sleep(10)
     bsoup = BeautifulSoup(driver.page_source, 'html.parser')
     bsoup.prettify()
-    closest_product_result('Gala Apple', bsoup)
+    return closest_product_result(product_name, bsoup)
+
+
+def final_result(product_name):
+    clear_search_and_input(product_name)
+    time.sleep(10)
+    bsoup = BeautifulSoup(driver.page_source, 'html.parser')
+    bsoup.prettify()
+    return closest_product_result(product_name, bsoup)
