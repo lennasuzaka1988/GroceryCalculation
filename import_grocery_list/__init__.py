@@ -2,7 +2,7 @@ import pandas as pd
 
 # A simple grocery calculator for the weekly grocery list, base package for Grocery Scraper features
 sprouts_grocery_list = pd.read_excel('../Grocery List.xlsx',
-                                     sheet_name='Sprouts')
+                                     sheet_name='Sprouts', index_col=False)
 hy_vee_grocery_list = pd.read_excel('../Grocery List.xlsx',
                                     sheet_name='Hy-Vee')
 

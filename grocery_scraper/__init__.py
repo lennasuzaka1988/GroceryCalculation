@@ -82,9 +82,11 @@ def closest_product_result(product_name, soup):
     img_url_stripped = []
     product_input = soup.find('ol').find(string=re.compile(product_name))
     product_input_list.append(product_input)
-    price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
+    try:
+        price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
+    except AttributeError:
+        price_text = product_input.find_parent().find_parent()
     product_input_price_list.append(stripping_text(price_text))
-
     direct_to_img = product_input.find_parent().find_parent().find_parent().find_parent().find_previous_sibling().find('img')['src']
     stripped_img_url = url_image_parse(direct_to_img)['path'].rsplit('format(jpg)/', 1)[1]
     img_url_stripped.append(stripped_img_url)
@@ -118,13 +120,13 @@ def first_searches(product):
     time.sleep(10)
 
 
-def subsequent_search(product):
-    time.sleep(5)
-    # Same as first_search function but targeting new elements from subsequent results
-    input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
-        By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
-
-    input_box.send_keys(product + Keys.ENTER)
+# def subsequent_search(product):
+#     time.sleep(5)
+#     # Same as first_search function but targeting new elements from subsequent results
+#     input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located((
+#         By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
+#
+#     input_box.send_keys(product + Keys.ENTER)
 
 
 def initial_final_result(product_name):
@@ -141,3 +143,7 @@ def final_result(product_name):
     beautiful_soup = BeautifulSoup(driver.page_source, 'html.parser')
     beautiful_soup.prettify()
     return closest_product_result(product_name, beautiful_soup)
+
+
+# store_navigation('64154')
+# print(initial_final_result('White Corn Tortilla'))

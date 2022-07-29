@@ -16,7 +16,6 @@ import time
 # Have to separate Sprouts and Hy-Vee lists into different spreadsheets as scraping only applies to Sprouts
 # (Hy-Vee disallows scraping), info pulled from import_grocery_list module
 grocery_list_xlsx = '../Grocery List.xlsx'
-all_prices_and_images = []
 
 
 def price_and_image_scraping():
@@ -25,7 +24,7 @@ def price_and_image_scraping():
     rows = dataframe_to_rows(product_df, index=False, header=False)
 
     # Apply value to cell if no value is listed
-    for row_index, row in enumerate(rows, 2):
+    for row_index, row in enumerate(rows, 1):
         for column_index, value in enumerate(row, 3):
             if ws_sprouts.cell(row=row_index, column=column_index).value and column_index == 3:
                 pass
@@ -69,17 +68,13 @@ def attach_excel_images():
     workbk.save(grocery_list_xlsx)
 
 
-# Need to convert results from all_prices_and_images() to dataframe for scraping output
-product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
-
-
 # Searching for first product (requires separate function because of changed HTML in first product's results page) and
 # subsequent products
 def product_searches():
     product = import_grocery_list.df_sprouts.iat[0, 1]
     first_product_result = initial_final_result(product)
     all_prices_and_images.append(list(itertools.chain(*first_product_result)))
-    price_and_image_scraping()
+    # price_and_image_scraping()
     # attach_excel_images()
     # return first_product_result
 
@@ -88,16 +83,20 @@ def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
         list_2_results = list(final_result(row))
         all_prices_and_images.append(list(itertools.chain(*list_2_results)))
-        price_and_image_scraping()
-    #         attach_excel_images()
+        # price_and_image_scraping()
+    # attach_excel_images()
 
 
+all_prices_and_images = [[]]
 store_navigation('64154')
 time.sleep(5)
 product_searches()
 time.sleep(5)
 following_product_searches()
 time.sleep(5)
-print(all_prices_and_images)
-# develop accuracy changes
+product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
+price_and_image_scraping()
+print(product_df)
+
+# Need to append product column with official name of product sought by scraper
 # develop way to wipe out columns
