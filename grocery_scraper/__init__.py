@@ -78,19 +78,20 @@ def stripping_text(string):
 def closest_product_result(product_name, soup):
     time.sleep(10)
     product_input_list = []
-    product_input_price_list = []
-    img_url_stripped = []
+    product_input_price_list = ['3.29', '1.99']
+    # img_url_stripped = []
     product_input = soup.find('ol').find(string=re.compile(product_name))
     product_input_list.append(product_input)
-    try:
-        price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
-    except AttributeError:
-        price_text = product_input.find_parent().find_parent()
-    product_input_price_list.append(stripping_text(price_text))
-    direct_to_img = product_input.find_parent().find_parent().find_parent().find_parent().find_previous_sibling().find('img')['src']
-    stripped_img_url = url_image_parse(direct_to_img)['path'].rsplit('format(jpg)/', 1)[1]
-    img_url_stripped.append(stripped_img_url)
-    return (product_input_price_list, img_url_stripped)
+    # try:
+    #     price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
+    # except AttributeError:
+    #     price_text = product_input.find_parent().find_parent()
+    # product_input_price_list.append(stripping_text(price_text))
+    # direct_to_img = product_input.find_parent().find_parent().find_parent().find_parent().find_previous_sibling().find('img')['src']
+    # stripped_img_url = url_image_parse(direct_to_img)['path'].rsplit('format(jpg)/', 1)[1]
+    # img_url_stripped.append(stripped_img_url)
+    # return (product_input_price_list, img_url_stripped)
+    return (product_input_list, product_input_price_list)
 
 
 # Stripping down the url in order to access the image
@@ -147,3 +148,4 @@ def final_result(product_name):
 
 # store_navigation('64154')
 # print(initial_final_result('White Corn Tortilla'))
+# print(final_result('Gala Apple'))

@@ -94,9 +94,9 @@ product_searches()
 time.sleep(5)
 following_product_searches()
 time.sleep(5)
-product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
-price_and_image_scraping()
-print(product_df)
+# product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
+# price_and_image_scraping()
+print(all_prices_and_images)
 
 # Need to append product column with official name of product sought by scraper
 # develop way to wipe out columns
