@@ -87,6 +87,7 @@ def following_product_searches():
     # attach_excel_images()
 
 
+# FIXME: Find out why subsequent searches aren't being performed properly after the first one
 all_prices_and_images = [[]]
 store_navigation('64154')
 time.sleep(5)
@@ -98,5 +99,6 @@ time.sleep(5)
 # price_and_image_scraping()
 print(all_prices_and_images)
 
-# Need to append product column with official name of product sought by scraper
-# develop way to wipe out columns
+
+# TODO: Need to append product column with official name of product sought by scraper
+# TODO: Develop way to wipe out price and image columns after completion of scraping and searching
