@@ -70,9 +70,9 @@ def attach_excel_images():
 
 # Searching for first product (requires separate function because of changed HTML in first product's results page) and
 # subsequent products
-def product_searches():
+def first_product_search():
     product = import_grocery_list.df_sprouts.iat[0, 1]
-    first_product_result = initial_final_result(product)
+    first_product_result = product_info_list_output(product)
     all_prices_and_images.append(list(itertools.chain(*first_product_result)))
     # price_and_image_scraping()
     # attach_excel_images()
@@ -81,17 +81,17 @@ def product_searches():
 
 def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
-        list_2_results = list(final_result(row))
+        list_2_results = list(following_products_info_list_output(row))
         all_prices_and_images.append(list(itertools.chain(*list_2_results)))
         # price_and_image_scraping()
     # attach_excel_images()
 
 
 # FIXME: Find out why subsequent searches aren't being performed properly after the first one
-all_prices_and_images = [[]]
+all_prices_and_images = []
 store_navigation('64154')
 time.sleep(5)
-product_searches()
+first_product_search()
 time.sleep(5)
 following_product_searches()
 time.sleep(5)
