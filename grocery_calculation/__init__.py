@@ -82,6 +82,8 @@ def first_product_search():
 def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
         list_2_results = list(following_products_info_list_output(row))
+        print(list_2_results)
+        print(row)
         all_prices_and_images.append(list(itertools.chain(*list_2_results)))
         # price_and_image_scraping()
     # attach_excel_images()

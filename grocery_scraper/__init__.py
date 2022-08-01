@@ -78,8 +78,10 @@ def closest_product_result(product_name, soup):
     product_input_list = []
     product_input_price_list = ['3.29']
     # img_url_stripped = []
+
     product_input = soup.find('ol').find(string=re.compile(product_name))
     product_input_list.append(product_input)
+    print(product_input)
     # try:
     #     price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
     # except AttributeError:
