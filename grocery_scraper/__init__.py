@@ -76,12 +76,11 @@ def stripping_beautiful_soup_extraction_text(string):
 def closest_product_result(product_name, soup):
     time.sleep(10)
     product_input_list = []
-    product_input_price_list = ['3.29']
+    product_input_price_list = []
     # img_url_stripped = []
 
     product_input = soup.find('ol').find(string=re.compile(product_name))
     product_input_list.append(product_input)
-    print(product_input)
     # try:
     #     price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
     # except AttributeError:
@@ -137,9 +136,11 @@ def product_info_list_output(product_name):
 
 
 def following_products_info_list_output(product_name_2):
+    time.sleep(5)
     clear_search_and_input()
-    following_product_names_input(product_name_2)
     time.sleep(10)
+    following_product_names_input(product_name_2)
+    time.sleep(5)
     beautiful_soup = BeautifulSoup(driver.page_source, 'html.parser')
     beautiful_soup.prettify()
     return closest_product_result(product_name_2, beautiful_soup)

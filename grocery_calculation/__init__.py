@@ -83,7 +83,6 @@ def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
         list_2_results = list(following_products_info_list_output(row))
         print(list_2_results)
-        print(row)
         all_prices_and_images.append(list(itertools.chain(*list_2_results)))
         # price_and_image_scraping()
     # attach_excel_images()
@@ -99,7 +98,7 @@ following_product_searches()
 time.sleep(5)
 # product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
 # price_and_image_scraping()
-print(all_prices_and_images)
+
 
 
 # TODO: Need to append product column with official name of product sought by scraper
