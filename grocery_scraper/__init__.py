@@ -1,16 +1,19 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urlparse
 import time
 import re
 
 # Initializing the webdriver
+webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 options = webdriver.ChromeOptions()
 options.add_argument('start-maximized')
 options.add_experimental_option('excludeSwitches', ['enable-automation'])
@@ -19,6 +22,7 @@ options.add_argument('--enable-javascript')
 options.add_argument('--disable-notifications')
 options.add_experimental_option('detach', True)
 driver = webdriver.Chrome(options=options)
+wait = WebDriverWait(driver, 10)
 
 
 # Clearing the search bar after every search for a product
@@ -74,7 +78,6 @@ def stripping_beautiful_soup_extraction_text(string):
 
 # Initializing BeautifulSoup to scrape for price
 def closest_product_result(product_name, soup):
-    time.sleep(10)
     product_input_list = []
     product_input_price_list = []
     # img_url_stripped = []
@@ -129,23 +132,25 @@ def following_product_names_input(following_product):
 
 def product_info_list_output(product_name):
     first_product_name_input(product_name)
-    time.sleep(10)
-    beautiful_soup = BeautifulSoup(driver.page_source, 'html.parser')
-    beautiful_soup.prettify()
-    return closest_product_result(product_name, beautiful_soup)
+    url = driver.current_url
+    wait.until(EC.url_to_be(url))
+    page_source = driver.page_source
+    page_soup = BeautifulSoup(page_source, 'html.parser')
+    page_soup.prettify()
+    return closest_product_result(product_name, page_soup)
 
 
 def following_products_info_list_output(product_name_2):
-    time.sleep(5)
     clear_search_and_input()
-    time.sleep(10)
     following_product_names_input(product_name_2)
-    time.sleep(5)
-    beautiful_soup = BeautifulSoup(driver.page_source, 'html.parser')
-    beautiful_soup.prettify()
-    return closest_product_result(product_name_2, beautiful_soup)
+    following_urls = driver.current_url
+    wait.until(EC.url_to_be(following_urls))
+    page_source_2 = driver.page_source
+    following_page_soup = BeautifulSoup(page_source_2, 'html.parser')
+    following_page_soup.prettify()
+    return closest_product_result(product_name_2, following_page_soup)
 
 
-# store_navigation('64154')
-# print(initial_final_result('White Corn Tortilla'))
-# print(final_result('Gala Apple'))
+store_navigation('64154')
+print(product_info_list_output('White Corn Tortilla'))
+print(following_products_info_list_output('Gala Apple'))

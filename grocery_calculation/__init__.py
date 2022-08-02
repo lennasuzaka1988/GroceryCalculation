@@ -2,8 +2,8 @@ import itertools
 import urllib
 import urllib.request
 
+
 import openpyxl
-import pandas as pd
 from openpyxl.drawing.image import Image
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl_image_loader import SheetImageLoader
@@ -11,7 +11,6 @@ from openpyxl_image_loader import SheetImageLoader
 from grocery_scraper import *
 import import_grocery_list
 
-import time
 
 # Have to separate Sprouts and Hy-Vee lists into different spreadsheets as scraping only applies to Sprouts
 # (Hy-Vee disallows scraping), info pulled from import_grocery_list module
@@ -73,7 +72,7 @@ def attach_excel_images():
 def first_product_search():
     product = import_grocery_list.df_sprouts.iat[0, 1]
     first_product_result = product_info_list_output(product)
-    all_prices_and_images.append(list(itertools.chain(*first_product_result)))
+    # all_prices_and_images.append(list(itertools.chain(*first_product_result)))
     # price_and_image_scraping()
     # attach_excel_images()
     # return first_product_result
@@ -82,8 +81,7 @@ def first_product_search():
 def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
         list_2_results = list(following_products_info_list_output(row))
-        print(list_2_results)
-        all_prices_and_images.append(list(itertools.chain(*list_2_results)))
+        # all_prices_and_images.append(list(itertools.chain(*list_2_results)))
         # price_and_image_scraping()
     # attach_excel_images()
 
@@ -91,11 +89,8 @@ def following_product_searches():
 # FIXME: Find out why subsequent searches aren't being performed properly after the first one
 all_prices_and_images = []
 store_navigation('64154')
-time.sleep(5)
 first_product_search()
-time.sleep(5)
 following_product_searches()
-time.sleep(5)
 # product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
 # price_and_image_scraping()
 
