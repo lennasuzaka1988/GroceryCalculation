@@ -27,7 +27,7 @@ wait = WebDriverWait(driver, 10)
 
 # Clearing the search bar after every search for a product
 def clear_search_and_input():
-    input_element_wait = WebDriverWait(driver, timeout=10).until(EC.presence_of_element_located((
+    input_element_wait = wait.until(EC.presence_of_element_located((
         By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
     hover = ActionChains(driver).move_to_element(input_element_wait).click().key_down(Keys.CONTROL) \
         .send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.DELETE)
@@ -81,7 +81,6 @@ def closest_product_result(product_name, soup):
     product_input_list = []
     product_input_price_list = []
     # img_url_stripped = []
-
     product_input = soup.find('ol').find(string=re.compile(product_name))
     product_input_list.append(product_input)
     # try:
@@ -124,10 +123,12 @@ def first_product_name_input(product):
 
 
 def following_product_names_input(following_product):
-    time.sleep(5)
-    input_box = WebDriverWait(driver, timeout=30).until(EC.presence_of_element_located(
-        (By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
-    input_box.send_keys(following_product + Keys.ENTER)
+    try:
+        input_box = wait.until(EC.presence_of_element_located(
+            (By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
+        input_box.send_keys(following_product + Keys.ENTER)
+    except TimeoutException:
+        print('Timed out waiting for page to load')
 
 
 def product_info_list_output(product_name):
@@ -137,20 +138,10 @@ def product_info_list_output(product_name):
     page_source = driver.page_source
     page_soup = BeautifulSoup(page_source, 'html.parser')
     page_soup.prettify()
-    return closest_product_result(product_name, page_soup)
-
-
-def following_products_info_list_output(product_name_2):
+    first_result = closest_product_result(product_name, page_soup)
     clear_search_and_input()
-    following_product_names_input(product_name_2)
-    following_urls = driver.current_url
-    wait.until(EC.url_to_be(following_urls))
-    page_source_2 = driver.page_source
-    following_page_soup = BeautifulSoup(page_source_2, 'html.parser')
-    following_page_soup.prettify()
-    return closest_product_result(product_name_2, following_page_soup)
+    return first_result
 
 
 store_navigation('64154')
-print(product_info_list_output('White Corn Tortilla'))
-print(following_products_info_list_output('Gala Apple'))
+print(product_info_list_output('Gala Apple'))
