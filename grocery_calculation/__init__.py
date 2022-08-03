@@ -71,26 +71,32 @@ def attach_excel_images():
 # subsequent products
 def first_product_search():
     product = import_grocery_list.df_sprouts.iat[0, 1]
+    first_product_name_input(product)
     first_product_result = product_info_list_output(product)
+    all_prices_and_images.append(first_product_result)
     # all_prices_and_images.append(list(itertools.chain(*first_product_result)))
     # price_and_image_scraping()
     # attach_excel_images()
-    # return first_product_result
 
 
 def following_product_searches():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
-        list_2_results = list(following_products_info_list_output(row))
+        following_product_names_input(row)
+        list_2_results = product_info_list_output(row)
+        all_prices_and_images_p2.append(list_2_results)
         # all_prices_and_images.append(list(itertools.chain(*list_2_results)))
         # price_and_image_scraping()
     # attach_excel_images()
 
 
 # FIXME: Find out why subsequent searches aren't being performed properly after the first one
-all_prices_and_images = []
+# all_prices_and_images = []
+# all_prices_and_images_p2 = []
 store_navigation('64154')
-first_product_search()
-following_product_searches()
+# first_product_search()
+# following_product_searches()
+print(first_product_search('Gala Apple'))
+print(product_info_list_output('Gala Apple'))
 # product_df = pd.DataFrame(all_prices_and_images, columns=['Price', 'Image Link'])
 # price_and_image_scraping()
 

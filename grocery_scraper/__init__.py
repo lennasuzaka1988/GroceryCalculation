@@ -77,12 +77,12 @@ def stripping_beautiful_soup_extraction_text(string):
 
 
 # Initializing BeautifulSoup to scrape for price
-def closest_product_result(product_name, soup):
-    product_input_list = []
-    product_input_price_list = []
-    # img_url_stripped = []
-    product_input = soup.find('ol').find(string=re.compile(product_name))
-    product_input_list.append(product_input)
+# def closest_product_result(product_name, soup):
+#     product_input_list = []
+#     product_input_price_list = []
+#     # img_url_stripped = []
+#     product_input = soup.find('ol').find(string=re.compile(product_name))
+#     product_input_list.append(product_input)
     # try:
     #     price_text = product_input.find_parent().find_parent().find_parent().find_previous_sibling().get_text()
     # except AttributeError:
@@ -92,7 +92,15 @@ def closest_product_result(product_name, soup):
     # stripped_img_url = url_image_parse(direct_to_img)['path'].rsplit('format(jpg)/', 1)[1]
     # img_url_stripped.append(stripped_img_url)
     # return (product_input_price_list, img_url_stripped)
-    return (product_input_list, product_input_price_list)
+    # return (product_input_list, product_input_price_list)
+
+
+def closest_product_result(product_name):
+    page_soup = BeautifulSoup(driver.page_source, 'html.parser')
+    page_soup.prettify()
+    time.sleep(5)
+    product = page_soup.find('ol').find(string=re.compile(product_name))
+    return product
 
 
 # Stripping down the url in order to access the image
@@ -132,16 +140,18 @@ def following_product_names_input(following_product):
 
 
 def product_info_list_output(product_name):
-    first_product_name_input(product_name)
     url = driver.current_url
     wait.until(EC.url_to_be(url))
-    page_source = driver.page_source
-    page_soup = BeautifulSoup(page_source, 'html.parser')
-    page_soup.prettify()
-    first_result = closest_product_result(product_name, page_soup)
+    # page_source = driver.page_source
+    # page_soup = BeautifulSoup(page_source, 'html.parser')
+    # page_soup.prettify()
+    result = closest_product_result(product_name)
     clear_search_and_input()
-    return first_result
+    return result
 
 
 store_navigation('64154')
-print(product_info_list_output('Gala Apple'))
+first_product_name_input('Gala Apple')
+product_info_list_output('Gala Apple')
+following_product_names_input('Corn tortilla')
+product_info_list_output('Corn tortilla')
