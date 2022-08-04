@@ -94,12 +94,13 @@ def stripping_beautiful_soup_extraction_text(string):
     # return (product_input_list, product_input_price_list)
 
 
-def closest_product_result(product_name):
+def closest_product_result():
     time.sleep(5)
     page_soup = BeautifulSoup(driver.page_source, 'html.parser')
     page_soup.prettify()
-    product = page_soup.find('ol').find(string=re.compile(product_name))
-    return product
+    # product = page_soup.find('ol').find(string=re.compile(product_name))
+    for i in page_soup.find_all('ol'):
+        return i.get_text()
 
 
 # Stripping down the url in order to access the image
