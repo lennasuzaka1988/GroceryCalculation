@@ -26,7 +26,7 @@ wait = WebDriverWait(driver, 10)
 
 
 # Clearing the search bar after every search for a product
-def clear_search_and_input():
+def clear_search():
     input_element_wait = wait.until(EC.presence_of_element_located((
         By.XPATH, '//*[@id="sticky-react-header"]/div/div[2]/div[1]/form/div/input')))
     hover = ActionChains(driver).move_to_element(input_element_wait).click().key_down(Keys.CONTROL) \
@@ -76,7 +76,6 @@ def stripping_beautiful_soup_extraction_text(string):
     return strip_context
 
 
-# Initializing BeautifulSoup to scrape for price
 # def closest_product_result(product_name, soup):
 #     product_input_list = []
 #     product_input_price_list = []
@@ -96,9 +95,9 @@ def stripping_beautiful_soup_extraction_text(string):
 
 
 def closest_product_result(product_name):
+    time.sleep(5)
     page_soup = BeautifulSoup(driver.page_source, 'html.parser')
     page_soup.prettify()
-    time.sleep(5)
     product = page_soup.find('ol').find(string=re.compile(product_name))
     return product
 
@@ -120,7 +119,7 @@ def url_image_parse(img):
 # Function is for first product ONLY since paths and JavaScript changes a little for the subsequent searches
 def first_product_name_input(product):
     # Input product from Excel spreadsheet and automating search
-    input_product = WebDriverWait(driver, timeout=30).until(
+    input_product = WebDriverWait(driver, timeout=10).until(
         EC.presence_of_element_located((By.XPATH,
                                         '//*[@id="menu-item-2557"]/div/unata-search-nav/div/form/input')))
     input_product.send_keys(product + Keys.ENTER)
@@ -138,20 +137,3 @@ def following_product_names_input(following_product):
     except TimeoutException:
         print('Timed out waiting for page to load')
 
-
-def product_info_list_output(product_name):
-    url = driver.current_url
-    wait.until(EC.url_to_be(url))
-    # page_source = driver.page_source
-    # page_soup = BeautifulSoup(page_source, 'html.parser')
-    # page_soup.prettify()
-    result = closest_product_result(product_name)
-    clear_search_and_input()
-    return result
-
-
-store_navigation('64154')
-first_product_name_input('Gala Apple')
-product_info_list_output('Gala Apple')
-following_product_names_input('Corn tortilla')
-product_info_list_output('Corn tortilla')
