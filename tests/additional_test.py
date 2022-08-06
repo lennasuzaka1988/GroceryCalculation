@@ -16,7 +16,7 @@ df_sprouts = pd.DataFrame(sprouts_grocery_list)
 def first_item_search():
     product = import_grocery_list.df_sprouts.iat[0, 1]
     first_product_name_input(product)
-    print(closest_product_result(product))
+    return closest_product_result(product)
 
 
 def following_item_search():
@@ -24,9 +24,11 @@ def following_item_search():
         clear_search()
         following_product_names_input(row)
         time.sleep(10)
-        print(closest_product_result(row))
+        bsoup = BeautifulSoup(driver.page_source, features='html5lib')
+        print(bsoup.find('li' ).find_parent().get_text())
 
 
 store_navigation('64154')
 first_item_search()
+time.sleep(10)
 following_item_search()

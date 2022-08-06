@@ -94,13 +94,12 @@ def stripping_beautiful_soup_extraction_text(string):
     # return (product_input_list, product_input_price_list)
 
 
-def closest_product_result():
+def closest_product_result(product_name):
     time.sleep(5)
-    page_soup = BeautifulSoup(driver.page_source, 'html.parser')
+    page_soup = BeautifulSoup(driver.page_source, features='html5lib')
     page_soup.prettify()
     # product = page_soup.find('ol').find(string=re.compile(product_name))
-    for i in page_soup.find_all('ol'):
-        return i.get_text()
+    print(page_soup.find('ol').find(string=re.compile(product_name)).get_text())
 
 
 # Stripping down the url in order to access the image
@@ -137,4 +136,5 @@ def following_product_names_input(following_product):
         input_box.send_keys(following_product + Keys.ENTER)
     except TimeoutException:
         print('Timed out waiting for page to load')
+
 
