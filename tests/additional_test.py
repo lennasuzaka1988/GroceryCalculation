@@ -23,9 +23,11 @@ def following_item_search():
     for row in import_grocery_list.df_sprouts['Item'].dropna()[1:]:
         clear_search()
         following_product_names_input(row)
+        current_page = driver.current_url
+        driver.get(current_page)
         time.sleep(10)
         bsoup = BeautifulSoup(driver.page_source, features='html5lib')
-        print(bsoup.find('li' ).find_parent().get_text())
+        print(bsoup.find('li').find_parent().get_text())
 
 
 store_navigation('64154')
