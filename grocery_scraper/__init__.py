@@ -137,4 +137,23 @@ def following_product_names_input(following_product):
     except TimeoutException:
         print('Timed out waiting for page to load')
 
+    # current_page = driver.current_url
+    #
+    # driver.get(current_page)
+    #
+    # wait_until_expand_info = WebDriverWait(driver, timeout=30).until(EC.element_to_be_clickable((
+    #     By.CSS_SELECTOR, 'ol > li:nth-child(1) > div > div.cell-image-wrapper > span.cell-image.show')))
+    #
+    # action = ActionChains(driver)
+    #
+    # action.move_to_element(wait_until_expand_info).click().perform()
+    #
+    # # image_url.append(image_scrape())
+    #
+    # prices.append(scraping_price())
+    # return (prices, image_url)
+    # # DON'T REMOVE DAMMIT
+    # print(prices, image_url)
+
+
 
